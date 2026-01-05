@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lunch Menu</title>
+  <style>
+    :root {
+      --red: #b91c1c;
+      --black: #111827;
+      --white: #ffffff;
+      --gray: #f3f4f6;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--black);
+      color: var(--white);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1rem;
+    }
+
+    .card {
+      background: var(--white);
+      color: var(--black);
+      padding: 2rem;
+      border-radius: 16px;
+      max-width: 900px;
+      width: 100%;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
+      color: var(--red);
+    }
+
+    .date-box {
+      text-align: center;
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+      padding: 0.75rem;
+      background: var(--gray);
+      border-left: 6px solid var(--red);
+      border-right: 6px solid var(--red);
+      border-radius: 8px;
+    }
+
+    .banner {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto 1rem auto;
+      display: flex;
+      justify-content: center;
+    }
+
+    .banner-content {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: var(--white);
+      color: var(--black);
+      padding: 0.5rem 0.75rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.18);
+      width: 100%;
+    }
+
+    .banner img {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border-radius: 8px;
+      flex: 0 0 64px;
+    }
+
+    .banner-text {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font: Geneva;
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: var(--red);
+      text-align: center;
+      flex: 1;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .meal-box {
+      background: var(--gray);
+      padding: 1.25rem;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .meal-box.today {
+      background: var(--red);
+      color: var(--white);
+      transform: scale(1.03);
+    }
+
+    .label {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 700px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .meal-box.today {
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>WHS Lunch Menu</h1>
+    <div class="date-box" id="date"></div>
+
+    <div class="banner">
+      <div class="banner-content">
+        <div class="banner-text">Lets Go Warriors!</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="meal-box">
+        <div class="label">Yesterday</div>
+        <div id="yesterday"></div>
+      </div>
+      <div class="meal-box today">
+        <div class="label">Today</div>
+        <div id="today"></div>
+      </div>
+      <div class="meal-box">
+        <div class="label">Tomorrow</div>
+        <div id="tomorrow"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // EDIT LUNCHES HERE (Monday → Friday)
+    const lunches = [
+      "Popcorn Chicken, Mashed Potatoes, Steamed Corn",
+  "Cheeseburger on Whole Wheat Roll, Potato Wedges",
+  "Pasta Bar (Alfredo or Meat Sauce)",
+  "Crunch or Soft Tacos, Steamed Rice",
+  "Pizza Day",
+
+  "Bacon Egg & Cheese on Croissant",
+  "Chicken Drumsticks, Corn Bread",
+  "Chicken Patty on Whole Wheat Roll, Baked Beans",
+  "General Tso’s Chicken, Steamed Rice, Stir Fried Vegetables",
+  "Pizza Day",
+
+  "Meatball Subs, Pasta Bar (Alfredo or Meat Sauce)",
+  "Grilled Cheese, Tomato Soup",
+  "Pizza Day",
+  "Pulled Pork on Whole Wheat Roll, Steamed Corn",
+
+  "Brunch for Lunch: French Toast Sticks, Hashbrowns",
+  "Cheeseburger on Whole Wheat Roll, Potato Wedges",
+  "Crunch or Soft Tacos, Steamed Rice",
+  "Pizza Day",
+  "Popcorn Chicken, Mashed Potatoes, Steamed Corn",
+
+  "General Tso’s Chicken, Steamed Rice, Stir Fried Vegetables",
+  "Pasta Bar (Alfredo or Meat Sauce)",
+  "Bacon Egg & Cheese on Croissant",
+  "Pizza Day"
+    ];
+
+    function getLunchForDay(offset) {
+      const today = new Date();
+      const dayIndex = (today.getDay() + offset - 1 + 7) % 7; // Monday = 0
+
+      if (dayIndex > 4) return 'No School';
+      return lunches[dayIndex] || 'Not Listed';
+    }
+
+    function setDate() {
+      const now = new Date();
+      const formattedDate = now.toLocaleDateString(undefined, {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      document.getElementById('date').textContent = formattedDate;
+    }
+
+    function updateMeals() {
+      document.getElementById('yesterday').textContent = getLunchForDay(-1);
+      document.getElementById('today').textContent = getLunchForDay(0);
+      document.getElementById('tomorrow').textContent = getLunchForDay(1);
+    }
+
+    setDate();
+    updateMeals();
+
+    // Refresh every 24 hours
+    setTimeout(() => location.reload(), 24 * 60 * 60 * 1000);
+  </script>
+</body>
+</html>
